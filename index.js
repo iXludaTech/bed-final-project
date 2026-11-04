@@ -28,12 +28,12 @@ app.use("/hosts", hostsRouter);
 app.use("/reviews", reviewsRouter);
 app.use("/properties", propertiesRouter);
 
+// Report errors to Sentry
+Sentry.setupExpressErrorHandler(app);
 // Login
 app.use("/login", loginRouter);
 // Handle requests to unknown routes
 app.use(notFoundErrorHandler);
-// Report errors to Sentry
-Sentry.setupExpressErrorHandler(app);
 // Handle errors and send responses
 app.use(errorHandler);
 

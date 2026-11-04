@@ -1,13 +1,5 @@
 import NotFoundError from '../../../errors/NotFoundError.js';
-import { PrismaClient } from '../../../generated/prisma/client.js';
-import { PrismaPg } from '@prisma/adapter-pg';
-import 'dotenv/config';
-
-const adapter = new PrismaPg({
-    connectionString: process.env.DATABASE_URL,
-});
-
-const prisma = new PrismaClient({ adapter });
+import prisma from '../../config/prisma.js';
 
 const updateBookingById = async (id, data) => {
     const existingBooking = await prisma.booking.findUnique({
