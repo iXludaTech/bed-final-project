@@ -14,7 +14,13 @@ router.get('/', async (req, res, next) => {
         const { username, email } = req.query;
         const users = await getUsers(username, email);
 
-        res.status(200).json(users);
+        if (users.length === 0) {
+            return res.status(404).json({
+                message: "No users found.",
+            });
+        }
+
+        return res.status(200).json(users);
     } catch (error) {
         next(error);
     }

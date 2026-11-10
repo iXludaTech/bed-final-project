@@ -13,11 +13,18 @@ router.get('/', async (req, res, next) => {
     try {
         const reviews = await getReviews();
 
-        res.status(200).json(reviews);
+        if (reviews.length === 0) {
+            return res.status(404).json({
+                message: "No reviews found.",
+            });
+        }
+        return res.status(200).json(reviews);
+
     } catch (error) {
         next(error);
     }
 });
+
 
 // GET review by ID
 router.get('/:id', async (req, res, next) => {

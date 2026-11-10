@@ -12,10 +12,16 @@ const router = Router();
 router.get('/', async (req, res, next) => {
     try {
         const { name } = req.query;
-
         const hosts = await getHosts(name);
 
-        res.status(200).json(hosts);
+        if (hosts.length === 0) {
+            return res.status(404).json({
+                message: "No hosts found.",
+            });
+        }
+
+        return res.status(200).json(hosts);
+
     } catch (error) {
         next(error);
     }

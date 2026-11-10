@@ -12,15 +12,32 @@ const router = Router();
 router.get('/', async (req, res, next) => {
     try {
         const { location, pricePerNight } = req.query;
-
+        // Validate pricePerNight
+        if (
+            pricePerNight !== undefined &&
+            (
+                !Number.isFinite(Number(pricePerNight)) ||
+                Number(pricePerNight) < 0
+            )
+        ) {
+            return res.status(400).json({
+                message: "pricePerNight must be a valid non-negative number.",
+            });
+        }
         const properties = await getProperties(
             location,
             pricePerNight !== undefined
                 ? Number(pricePerNight)
                 : undefined
         );
+        // Check whether properties exist
+        if (properties.length === 0) {
+            return res.status(404).json({
+                message: "No properties found.",
+            });
+        }
+        return res.status(200).json(properties);
 
-        res.status(200).json(properties);
     } catch (error) {
         next(error);
     }

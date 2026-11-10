@@ -10,26 +10,32 @@ const createHost = async (
     pictureUrl,
     aboutMe
 ) => {
-    try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newHost = {
-            username,
-            password: hashedPassword,
-            name,
-            email,
-            phoneNumber,
-            pictureUrl,
-            aboutMe,
-        };
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-        const host = await prisma.host.create({
-            data: newHost,
-        });
+    const newHost = {
+        username,
+        password: hashedPassword,
+        name,
+        email,
+        phoneNumber,
+        pictureUrl,
+        aboutMe,
+    };
 
-        return host;
-    } catch (error) {
-        throw error;
-    }
+    const host = await prisma.host.create({
+        data: newHost,
+        select: {
+            id: true,
+            username: true,
+            name: true,
+            email: true,
+            phoneNumber: true,
+            pictureUrl: true,
+            aboutMe: true,
+        },
+    });
+
+    return host;
 };
 
 export default createHost;

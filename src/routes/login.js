@@ -1,4 +1,4 @@
-import prisma from '../../config/prisma.js';
+import prisma from '../config/prisma.js';
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";

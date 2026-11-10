@@ -13,7 +13,14 @@ router.get("/", async (req, res, next) => {
     try {
         const amenities = await getAmenities();
 
-        res.status(200).json(amenities);
+        if (amenities.length === 0) {
+            return res.status(404).json({
+                message: "No amenities found.",
+            });
+        }
+
+        return res.status(200).json(amenities);
+
     } catch (error) {
         next(error);
     }

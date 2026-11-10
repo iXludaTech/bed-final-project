@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import getBookings from '../services/bookings/getBookings.js';
-import createBooking from '../services/bookings/createbooking.js';
+import createBooking from '../services/bookings/createBooking.js';
 import getBookingById from '../services/bookings/getBookingById.js';
 import deleteBookingById from '../services/bookings/deleteBooking.js';
 import updateBookingById from '../services/bookings/updateBooking.js';
 import auth from '../../middleware/auth.js';
 
 const router = Router();
+
 
 // GET all bookings, optionally filtered
 router.get('/', async (req, res, next) => {
@@ -21,19 +22,60 @@ router.get('/', async (req, res, next) => {
             bookingStatus,
         } = req.query;
 
+        // Validate numeric query parameters
+        if (
+            numberOfGuests !== undefined &&
+            (!Number.isInteger(Number(numberOfGuests)) ||
+                Number(numberOfGuests) < 1)
+        ) {
+            return res.status(400).json({
+                message: "numberOfGuests must be a positive integer.",
+            });
+        }
+
+        if (
+            totalPrice !== undefined &&
+            (!Number.isFinite(Number(totalPrice)) ||
+                Number(totalPrice) < 0)
+        ) {
+            return res.status(400).json({
+                message: "totalPrice must be a valid non-negative number.",
+            });
+        }
+
         const bookings = await getBookings(
-            userId !== undefined ? userId : undefined,
-            propertyId !== undefined ? propertyId : undefined,
+            userId,
+            propertyId,
             checkinDate,
             checkoutDate,
             numberOfGuests !== undefined
                 ? Number(numberOfGuests)
                 : undefined,
-            totalPrice !== undefined ? Number(totalPrice) : undefined,
+            totalPrice !== undefined
+                ? Number(totalPrice)
+                : undefined,
             bookingStatus
         );
 
-        res.status(200).json(bookings);
+        if (bookings.length === 0) {
+            return res.status(404).json({
+                message: "No bookings found.",
+            });
+        }
+        return res.status(200).json(bookings);
+
+    } catch (error) {
+        next(error);
+    }
+});
+
+// GET booking by ID
+router.get('/:id', async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const booking = await getBookingById(id);
+
+        res.status(200).json(booking);
     } catch (error) {
         next(error);
     }
@@ -70,18 +112,6 @@ router.post('/', auth, async (req, res, next) => {
         );
 
         res.status(201).json(newBooking);
-    } catch (error) {
-        next(error);
-    }
-});
-
-// GET booking by ID
-router.get('/:id', async (req, res, next) => {
-    try {
-        const { id } = req.params;
-        const booking = await getBookingById(id);
-
-        res.status(200).json(booking);
     } catch (error) {
         next(error);
     }
