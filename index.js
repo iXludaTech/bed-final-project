@@ -20,6 +20,12 @@ const app = express();
 app.use(express.json());
 app.use(logs);
 
+app.get('/', (req, res) => {
+    res.status(200).json({
+        message: 'Welcome to the Bookings API!',
+        status: 'Server is running'
+    });
+});
 // Resource routes
 app.use("/users", usersRouter);
 app.use("/bookings", bookingsRouter);
